@@ -1,8 +1,8 @@
 %% readCSV
 %for new codec code that handles short videos and long for Kim's two
-%different rigs
+%different rigs. Will error if annotations are incomplete
 
-csv_path ='C:\Users\berri\OneDrive\Desktop\TEST';
+csv_path ='\\research.files.med.harvard.edu\Neurobio\MICROSCOPE\Janet\Kim_videos\Snippets';
 myFiles = dir(fullfile(csv_path,'*.csv'));
 
 
