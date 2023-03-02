@@ -2,7 +2,7 @@
 %for new codec code that handles short videos and long for Kim's two
 %different rigs. Will error if annotations are incomplete
 
-csv_path ='\\research.files.med.harvard.edu\Neurobio\MICROSCOPE\Janet\Kim_videos\Snippets';
+csv_path ='C:\Users\berri\OneDrive\Desktop\TEST';
 myFiles = dir(fullfile(csv_path,'*.csv'));
 
 
@@ -31,6 +31,7 @@ for i=1:length(myFiles)
     writetable(csv_new, save_fname);
 
     disp('File Saved');
+    clear Var6
     end
  
    
