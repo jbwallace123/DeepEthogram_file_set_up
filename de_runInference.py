@@ -26,6 +26,7 @@ assert 'DATA' in files, 'DATA directory not found! {}'.format(files)
 assert 'models' in files, 'models directory not found! {}'.format(files)
 assert 'project_config.yaml' in files, 'project config not found! {}'.format(files)
 
+preset = 'deg_f'
 cfg = configuration.make_feature_extractor_inference_cfg(project_path=project_path, preset=preset)
 print(OmegaConf.to_yaml(cfg))
 

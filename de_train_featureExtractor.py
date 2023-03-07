@@ -26,11 +26,22 @@ assert 'DATA' in files, 'DATA directory not found! {}'.format(files)
 assert 'models' in files, 'models directory not found! {}'.format(files)
 assert 'project_config.yaml' in files, 'project config not found! {}'.format(files)
 
+preset = 'deg_f'
 cfg = configuration.make_feature_extractor_train_cfg(project_path, preset=preset)
 print(OmegaConf.to_yaml(cfg))
 
 cfg.flow_generator.weights = 'latest'
 cfg.compute.num_workers = 8 #n_cpus  EDIT HERE
+
+def reset_logger():
+  # First, overwrite any logger so that we can actually see log statements
+  # https://stackoverflow.com/questions/13839554/how-to-change-filehandle-with-python-logging-on-the-fly-with-different-classes-a
+  log = logging.getLogger()  # root logger
+  log.setLevel(logging.INFO)
+  for hdlr in log.handlers[:]:  # remove all old handlers
+      log.removeHandler(hdlr)
+  log.addHandler(logging.StreamHandler())
+  return log
 
 log = reset_logger()
 
