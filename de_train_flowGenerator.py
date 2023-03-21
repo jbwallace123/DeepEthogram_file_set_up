@@ -72,3 +72,5 @@ assert len(figure_files) == 1
 
 #Image(figure_files[0])
 
+print("Finished training flow generator")
+

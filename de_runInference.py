@@ -36,6 +36,7 @@ cfg.flow_generator.weights = 'latest'
 cfg.inference.overwrite = True
 # make sure errors are thrown
 cfg.inference.ignore_error = False
+cfg.compute.batch_size = 24
 cfg.compute.num_workers = 8 #EDIT HERE
 
 print(OmegaConf.to_yaml(cfg))
@@ -56,5 +57,6 @@ utils.print_hdf5(outputfile)
 with h5py.File(outputfile, 'r') as f:
   probabilities = f['resnet18/P'][:]
 # n frames x K behaviors
-print(probabilities.shape)
-probabilities
+#print(probabilities.shape)
+#probabilities
+print("Finished running Inference")

@@ -61,3 +61,4 @@ figure_files = utils.get_subfiles(figure_dir, 'file')
 assert len(figure_files) >= 1
 
 #Image(figure_files[0])
+print("Finished training feature extractor")

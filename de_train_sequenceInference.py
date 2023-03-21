@@ -90,3 +90,5 @@ df = pd.read_csv(predictions_filename, index_col=0)
 # display output
 print(predictions_filename)
 df.head()
+
+print("Finished sequence inference")
