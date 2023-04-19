@@ -41,17 +41,57 @@ def reset_logger():
 
 log = reset_logger()
 
+print("Processing feature extraction inference")
+cfg = configuration.make_feature_extractor_inference_cfg(project_path=project_path, preset=preset)
+print(OmegaConf.to_yaml(cfg))
 
-print("Processing sequence inference")
+cfg.feature_extractor.weights = 'latest'
+cfg.flow_generator.weights = 'latest'
+
+cfg.inference.overwrite = True
+# make sure errors are thrown
+cfg.inference.ignore_error = False
+cfg.compute.batch_size = 24
+cfg.compute.num_workers = 8 #EDIT HERE
+cfg.inference.directory_list = ['/n/data1/hms/neurobio/sabatini/Janet/Kim_segmented_deepethogram/DATA/2021-02-19 16-41-21-Cnewvid0000',
+                           '/n/data1/hms/neurobio/sabatini/Janet/Kim_segmented_deepethogram/DATA/2021-02-19 16-41-21-Cnewvid0001',
+                           '/n/data1/hms/neurobio/sabatini/Janet/Kim_segmented_deepethogram/DATA/2021-02-19 16-41-21-Cnewvid0002']
+
+print(OmegaConf.to_yaml(cfg))
+
+feature_extractor_inference(cfg)
+
+# this just parses our DATA directory, to get the path to each file for each video
+records = projects.get_records_from_datadir(os.path.join(project_path, 'DATA'))
+animal = random.choice(list(records.keys()))
+record = records[animal]
+
+# I call the file output by inference the `outputfile` in various places in the code
+outputfile = record['output']
+
+utils.print_hdf5(outputfile)
+
+# we use the h5py package for this
+with h5py.File(outputfile, 'r') as f:
+  probabilities = f['resnet18/P'][:]
+# n frames x K behaviors
+#print(probabilities.shape)
+#probabilities
+print("Finished running Inference")
+
+
+print("Now processing sequence inference")
 
 cfg = configuration.make_sequence_inference_cfg(project_path)
 cfg.sequence.weights = 'latest'
 cfg.compute.num_workers = 8 #n_cpus  EDIT HERE
-#cfg.inference.directory_list = ['/n/data1/hms/neurobio/sabatini/Janet/Kim_segmented_deepethogram/DATA/Unlabeled_001',
-#                           '/n/data1/hms/neurobio/sabatini/Janet/Kim_segmented_deepethogram/DATA/Unlabeled_002',
-#                           '/n/data1/hms/neurobio/sabatini/Janet/Kim_segmented_deepethogram/DATA/Unlabeled_003']
 cfg.inference.overwrite = True
 cfg.inference.ignore_error = False
+
+cfg.inference.directory_list = ['/n/data1/hms/neurobio/sabatini/Janet/Kim_segmented_deepethogram/DATA/Unlabeled_001',
+                           '/n/data1/hms/neurobio/sabatini/Janet/Kim_segmented_deepethogram/DATA/Unlabeled_002',
+                           '/n/data1/hms/neurobio/sabatini/Janet/Kim_segmented_deepethogram/DATA/Unlabeled_003']
+
 
 sequence_inference(cfg)
 
@@ -73,23 +113,5 @@ with h5py.File(outputfile, 'r') as f:
 print(probabilities.shape)
 print(thresholds)
 
-cfg = configuration.make_postprocessing_cfg(project_path=project_path)
-
-postprocessing.postprocess_and_save(cfg)
-
-# Look at a record to see what's in it
-#load a random record
-records = projects.get_records_from_datadir(os.path.join(project_path, 'DATA'))
-animal = random.choice(list(records.keys()))
-record = records[animal]
-# figure out the filename
-predictions_filename = os.path.join(os.path.dirname(record['rgb']), record['key'] + '_predictions.csv')
-assert os.path.isfile(predictions_filename)
-
-# read csv
-df = pd.read_csv(predictions_filename, index_col=0)
-# display output
-print(predictions_filename)
-df.head()
-
 print("Finished sequence inference")
+print("Warning! Binary predictions not yet created.")
